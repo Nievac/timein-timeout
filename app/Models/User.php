@@ -42,4 +42,14 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user) {
+            $user->name = $user->fname . ' ' . $user->lname;
+        });
+        static::updating(function (User $user) {
+            $user->name = $user->fname . ' ' . $user->lname;
+        });
+    }
 }
