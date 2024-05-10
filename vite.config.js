@@ -8,4 +8,7 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    input: [
+        'resources/css/filament/app/theme.css'
+    ]
 });
