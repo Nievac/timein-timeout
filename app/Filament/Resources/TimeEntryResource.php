@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Enums\TimeEntryType;
 
 class TimeEntryResource extends Resource
 {
@@ -30,11 +31,14 @@ class TimeEntryResource extends Resource
                     )
                     ->label('User')
                     ->required()
+                ,\Filament\Forms\Components\DatePicker::make('entry_date')
+                    ->default(now())
+                    ->required()
                 ,\Filament\Forms\Components\DateTimePicker::make('date_time_entry')
                     ->default(now())
                     ->required()
                 ,\Filament\Forms\Components\Select::make('time_entry_type')
-                    ->options(\App\Enums\TimeEntryType::getList())
+                    ->options(TimeEntryType::class)
                     ->label('Type')
                     ->required()
 
@@ -47,11 +51,11 @@ class TimeEntryResource extends Resource
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('user_not_admin.name')
                     ->label('Name')
+                ,\Filament\Tables\Columns\TextColumn::make('entry_date')
                 ,\Filament\Tables\Columns\TextColumn::make('date_time_entry')
                     ->label('Time')
+                    ->dateTime('Y-m-d h:i A')
                 ,\Filament\Tables\Columns\TextColumn::make('time_entry_type')
-                    ->formatStateUsing(fn (string $state): string => \App\Enums\TimeEntryType::getList()[$state])
-                    ->label('Type')
             ])
             ->filters([
                 //

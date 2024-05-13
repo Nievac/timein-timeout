@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TimeEntryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,8 +12,14 @@ class TimeEntry extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'time_entry_type' => TimeEntryType::class,
+    ];
+
+
     protected $fillable = [
         'user_id',
+        'entry_date',
         'date_time_entry',
         'time_entry_type',
         'is_correction',

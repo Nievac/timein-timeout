@@ -3,10 +3,11 @@
 namespace App\Enums;
 use Filament\Support\Contracts\HasLabel;
 
-enum TimeEntryType: string implements HasLabel
+enum TimeEntryCorrectionStatus: string implements HasLabel
 {
-    case IN = 'In';
-    case OUT = 'Out';
+    case PENDING = 'Pending';
+    case APPROVED = 'Approved';
+    case REJECTED = 'Rejected';
 
     public function getLabel(): ?string
     {

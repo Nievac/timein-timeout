@@ -58,6 +58,7 @@ class WebBundy extends Page implements HasForms, HasActions, HasTable
     protected function saveTimeEntry($type) {
         return TimeEntry::create([
             'user_id' => auth()->user()->id,
+            'entry_date' => now(),
             'date_time_entry' => now(),
             'time_entry_type' => $type,
          ]);
@@ -67,12 +68,14 @@ class WebBundy extends Page implements HasForms, HasActions, HasTable
         return $table
             ->query(TimeEntry::query()->where('user_id', auth()->user()->id))
             ->columns([
+                TextColumn::make('entry_date'),
                 TextColumn::make('time_entry_type')
                     ->color(fn (string $state): string => match ($state) {
                         TimeEntryType::IN => 'success',
                         TimeEntryType::OUT => 'danger',
                     }),
-                TextColumn::make('date_time_entry'),
+                TextColumn::make('date_time_entry')
+                    ->dateTime("h:i A"),
             ])
             ->filters([
                 // ...

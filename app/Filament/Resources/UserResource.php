@@ -19,11 +19,6 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()->hasRole('admin');
-    }
-
     public static function form(Form $form): Form
     {
         return $form

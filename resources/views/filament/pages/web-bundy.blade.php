@@ -1,6 +1,7 @@
 <x-filament-panels::page>
     <div class="container flex px-4 mx-auto">
         <div class="w-4/12">
+            <h2 class="mb-2">Today is {{ now()->format('F d, Y (l)') }}</h2>
             <div id="MyClockDisplay" class="text-2xl clock min-h-[2rem]"></div>
             <div class="py-3">
                 <div class="flex">
@@ -10,8 +11,10 @@
             </div>
         </div>
         <div class="w-8/12">
-            <h1>Time Entry Logs</h1>
-            {{ $this->table }}
+            <h2>Time Entry Logs</h2>
+            <div class="mt-2">
+                {{ $this->table }}
+            </div>
         </div>
     </div>
 

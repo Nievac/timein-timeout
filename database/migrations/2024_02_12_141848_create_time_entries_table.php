@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('time_entries', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->dateTime('date_time_entry');
+            $table->date('entry_date');
+            $table->dateTime('date_time_entry')->comment('Actual date and time of the entry');;
             $table->string('time_entry_type');
             $table->boolean('is_correction');
             $table->unsignedBigInteger('corrected_by_user_id')->nullable();

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('correction_reason');
             $table->string('status');
             $table->unsignedBigInteger('approver_id')->nullable();
-            $table->text('approval_message');
+            $table->text('approval_message')->nullable();
             $table->dateTime('requested_timestamp')->nullable();
             $table->dateTime('resolved_timestamp')->nullable();
             $table->timestamps();
