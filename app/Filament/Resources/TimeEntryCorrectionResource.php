@@ -11,6 +11,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -45,15 +46,17 @@ class TimeEntryCorrectionResource extends Resource
                     ->required(),
                 Forms\Components\Textarea::make('correction_reason')
                     ->required()
+                    ->disabled(fn($record) => $record && $record->user_id != auth()->user()->id )
                     ->maxLength(65535),
                 Forms\Components\TextInput::make('status')
                     ->required()
                     ->maxLength(255)
-                    ->visible(auth()->user()->checkPermissionTo('edit status TimeEntryCorrection')),
+                    ->disabled(),
                 Forms\Components\Textarea::make('approval_message')
                     ->required()
                     ->maxLength(65535)
                     ->columnSpanFull()
+                    ->disabled(fn($record) => $record && !(is_null($record->status) || $record->status == TimeEntryCorrectionStatus::PENDING) )
                     ->visible(auth()->user()->checkPermissionTo('edit approval_message TimeEntryCorrection')),
             ]);
     }
@@ -94,9 +97,59 @@ class TimeEntryCorrectionResource extends Resource
                 SelectFilter::make('status')
                     ->options(TimeEntryCorrectionStatus::class)
 
-            ], layout: FiltersLayout::AboveContent)
+            ])
+            ->filtersFormColumns(3)
+            ->deferFilters()
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                Action::make('Approve')
+                    ->requiresConfirmation()
+                    ->form([
+                        \Filament\Forms\Components\TextArea::make('approval_message')->label('Approval Message'),
+                    ])
+                    ->action(function ($record, $data){
+                        $record->update([
+                            'status' => TimeEntryCorrectionStatus::APPROVED,
+                            'approval_message' => $data['approval_message'],
+                            'resolved_timestamp' => now(),
+                        ]);
+                    })
+                    ->visible(fn($record) => is_null($record->status) || $record->status === TimeEntryCorrectionStatus::PENDING),
+                Action::make('Reject')
+                    ->requiresConfirmation()
+                    ->form([
+                        \Filament\Forms\Components\TextArea::make('approval_message')->label('Rejection Message'),
+                    ])
+                    ->action(function ($record, $data){
+                        $record->update([
+                            'status' => TimeEntryCorrectionStatus::REJECTED,
+                            'approval_message' => $data['approval_message'],
+                            'resolved_timestamp' => now(),
+                        ]);
+                    })->color('danger')
+                    ->visible(fn($record) => is_null($record->status) || $record->status === TimeEntryCorrectionStatus::PENDING),
+                Tables\Actions\ViewAction::make()
+                    ->extraModalFooterActions(fn (Action $action): array => [
+                        Action::make('Approve')
+                            ->requiresConfirmation()
+                            ->form([
+                                \Filament\Forms\Components\TextArea::make('approval_message')->label('Approval Message'),
+                            ])
+                            ->action(function ($record, $data){
+                                dump($record);
+                                $record->update([
+                                    'status' => TimeEntryCorrectionStatus::APPROVED,
+                                    'approval_message' => $data['approval_message'],
+                                    'resolved_timestamp' => now(),
+                                ]);
+                            }),
+                    ])
+                    ->action(function (array $data, array $arguments): void {
+                        // Create
+
+                        if ($arguments['another'] ?? false) {
+                            // Reset the form and don't close the modal
+                        }
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
